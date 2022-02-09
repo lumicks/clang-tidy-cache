@@ -90,7 +90,11 @@ func EvaluatePreprocessedFile(buildRoot string, baseDir string, command *Compile
 		if err != nil {
 			return nil, err
 		}
-		defer f.Close()
+		defer func() {
+			f.Close()
+			// remove the file (clean up)
+			os.Remove(filename)
+		}()
 
 		if _, err := io.Copy(hasher, f); err != nil {
 			return nil, err
@@ -105,12 +109,6 @@ func EvaluatePreprocessedFile(buildRoot string, baseDir string, command *Compile
 
 	// compute the final digest
 	digest := hasher.Sum(nil)
-
-	// remove the file (clean up)
-	err = os.Remove(filename)
-	if err != nil {
-		return nil, err
-	}
 
 	return digest, nil
 }
