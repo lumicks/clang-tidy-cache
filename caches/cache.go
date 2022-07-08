@@ -59,7 +59,14 @@ func ComputeFingerPrint(clangTidyPath string, baseDir string, invocation *clang.
 	// extract the compilation target command flags from the database
 	targetFlags, err := clang.ExtractCompilationTarget(invocation.DatabaseRoot, invocation.TargetPath)
 	if err != nil {
-		return nil, err
+		cwd, wderr := os.Getwd()
+		if wderr != nil {
+			return nil, err
+		}
+		targetFlags, err = clang.ExtractCompilationTarget(cwd, invocation.TargetPath)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// parse the main clang flags
