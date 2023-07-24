@@ -221,7 +221,7 @@ func main() {
 	// handle version
 	if len(args) == 1 && args[0] == "version" {
 		fmt.Printf("clang-tidy-cache %s\n", VERSION)
-		os.Exit(1)
+		os.Exit(0)
 	}
 
 	cfg, err := loadConfiguration()
