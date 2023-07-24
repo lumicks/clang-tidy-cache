@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ejfitzgerald/clang-tidy-cache/caches"
-	"github.com/ejfitzgerald/clang-tidy-cache/clang"
 	"io"
 	"io/ioutil"
 	"os"
@@ -12,9 +10,13 @@ import (
 	"os/user"
 	"path"
 	"path/filepath"
+	"strconv"
+
+	"github.com/ejfitzgerald/clang-tidy-cache/caches"
+	"github.com/ejfitzgerald/clang-tidy-cache/clang"
 )
 
-const VERSION = "0.6.0"
+const VERSION = "0.7.0"
 
 type Configuration struct {
 	ClangTidyPath string                   `json:"clang_tidy_path"`
@@ -221,6 +223,20 @@ func main() {
 	// handle version
 	if len(args) == 1 && args[0] == "version" {
 		fmt.Printf("clang-tidy-cache %s\n", VERSION)
+		os.Exit(0)
+	}
+
+	if len(args) >= 1 && args[0] == "prune" {
+		numWeeks, err := strconv.Atoi(args[1])
+		if err != nil {
+			fmt.Printf("Failed to prune the cache: %v\n", err)
+			os.Exit(1)
+		}
+		err = caches.Prune(numWeeks)
+		if err != nil {
+			fmt.Printf("Failed to prune the cache: %v\n", err)
+			os.Exit(1)
+		}
 		os.Exit(0)
 	}
 
