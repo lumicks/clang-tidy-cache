@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"errors"
-	"github.com/google/shlex"
 	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
+
+	"github.com/google/shlex"
 )
 
 type CompilerCommand struct {
@@ -107,6 +108,9 @@ func EvaluatePreprocessedFile(buildRoot string, baseDir string, command *Compile
 		if err != nil {
 			return nil, err
 		}
+		defer func() {
+			os.Remove(filename)
+		}()
 		hasher.Write(bytes.ReplaceAll(data, []byte(baseDir), []byte(".")))
 	}
 
